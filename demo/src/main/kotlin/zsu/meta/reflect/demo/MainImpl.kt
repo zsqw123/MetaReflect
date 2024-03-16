@@ -7,29 +7,35 @@ import zsu.meta.reflect.mClass
 sealed interface SealedParent
 
 class ChildA(private val a: String) : SealedParent
-
 class ChildB(private val b: StringBuilder) : SealedParent
 
-fun reflectTest(metaReflect: MReflect): List<JClassName> {
-    val sealedParentClass = metaReflect.mClass<SealedParent>()
-    return sealedParentClass.sealedSubclasses
-}
-
-fun main() {
+inline fun testMain(
+    preload: () -> Unit,
+    onEach: (Int) -> Any,
+) {
     var start = System.nanoTime()
-    val metaReflect = MReflect.get()
-    MReflect.preload()
+    preload()
     println("preload: ${(System.nanoTime() - start) / 1000_000f}ms")
 
-    start = System.nanoTime()
-    val firstTime = reflectTest(metaReflect)
-    println(firstTime)
-    println("cost: ${(System.nanoTime() - start) / 1000_000f}ms")
-
-    repeat(3) {
+    repeat(4) {
         start = System.nanoTime()
-        val secondTime = reflectTest(metaReflect)
+        val secondTime = onEach(it)
         println(secondTime)
         println("$it cost: ${(System.nanoTime() - start) / 1000_000f}ms")
     }
 }
+
+fun ktMain() = testMain(preload = { Stub::class.supertypes }) {
+    SealedParent::class.sealedSubclasses
+}
+
+fun mMain() = testMain(preload = { MReflect.preload() }) {
+    MReflect.get().mClass<SealedParent>().sealedSubclasses
+}
+
+fun main() {
+    mMain()
+    ktMain()
+}
+
+private class Stub
