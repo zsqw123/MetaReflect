@@ -9,10 +9,15 @@ import kotlin.reflect.*
 interface ReflectAdapter
 
 interface JavaReflectAdapter<out J> : ReflectAdapter {
+    /** transform this object to java reflection object. */
     val asJr: J
 }
 
 interface KReflectAdapter<out K> : ReflectAdapter {
+    /**
+     * transform this object to kotlin reflection object.
+     * Limited in no kotlin-reflect dependency mode (such as cannot create [KFunction] or [KProperty])
+     */
     val asKr: K
 }
 

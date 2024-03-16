@@ -13,13 +13,13 @@ import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KDeclarationContainer
-import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
 import org.objectweb.asm.Type as AsmType
 import java.lang.reflect.Type as JavaType
 
 interface MElement<T : Any> {
+    /** represented kotlin metadata element. */
     val asKm: T
 }
 
@@ -44,6 +44,9 @@ abstract class AbsMDeclaration<T : KmDeclarationContainer> : MClassLike<T>, Meta
     override val typeAliases: List<MTypeAlias> by lazy { asKm.typeAliases.map { MTypeAlias(this, it) } }
 }
 
+/**
+ * An enhancement wrapper for [Class] through kotlin metadata
+ */
 class MClass(
     override val asJr: Class<*>,
     override val asKm: KmClass,
@@ -207,7 +210,7 @@ class MProperty(
     }
 
     override fun getTypeParameter(id: Int): MTypeParameter {
-        TODO("Not yet implemented")
+        return parameterId(typeParameters, parent, id)
     }
 
     override fun toString(): String {
@@ -218,7 +221,21 @@ class MProperty(
 class MTypeAlias(
     override val parent: MClassLike<*>,
     override val asKm: KmTypeAlias,
-) : MMember<KmTypeAlias>
+) : MMember<KmTypeAlias>, TypeParameterContainer {
+    val typeParameters: List<MTypeParameter> by lazy {
+        asKm.typeParameters.map { MTypeParameter(it, this) }
+    }
+
+    /** @see [KmTypeAlias.underlyingType] */
+    val underlyingType: MType by lazy { MType(asKm.underlyingType, this) }
+
+    /** @see [KmTypeAlias.expandedType] */
+    val expandedType: MType by lazy { MType(asKm.expandedType, this) }
+
+    override fun getTypeParameter(id: Int): MTypeParameter {
+        return parameterId(typeParameters, parent, id)
+    }
+}
 
 class MType(
     override val asKm: KmType,
