@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation(D.ksp)
 }
 
 tasks.test {

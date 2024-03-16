@@ -19,6 +19,6 @@ rootProject.name = "MetaReflect"
 includeBuild("insidePlugin")
 
 include(":meta-reflect")
-include(":meta-reflect-ksp")
+include(":meta-reflect-kcp")
 include(":demo")
 include(":demo:api")
