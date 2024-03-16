@@ -85,7 +85,11 @@ interface MMember<T : Any> : MElement<T> {
 class MConstructor(
     override val parent: MDeclaration<*>,
     override val asKm: KmConstructor,
-) : MMember<KmConstructor>
+) : MMember<KmConstructor> {
+    val valueParameters: List<MValueParameter> by lazy {
+        asKm.valueParameters.map { MValueParameter(it) }
+    }
+}
 
 /**
  * @param parent returns null when function is a lambda generated.
@@ -93,7 +97,24 @@ class MConstructor(
 class MFunction(
     override val parent: MDeclaration<*>?,
     override val asKm: KmFunction,
-) : MMember<KmFunction>
+) : MMember<KmFunction> {
+    val name = asKm.name
+    val typeParameters: List<MTypeParameter> by lazy {
+        asKm.typeParameters.map { MTypeParameter(it) }
+    }
+    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it) }
+
+    @ExperimentalContextReceivers
+    val contextReceiverTypes: List<MType> by lazy {
+        asKm.contextReceiverTypes.map { MType(it) }
+    }
+
+    val valueParameters: List<MValueParameter> by lazy {
+        asKm.valueParameters.map { MValueParameter(it) }
+    }
+
+    val returnType: MType = MType(asKm.returnType)
+}
 
 class MProperty(
     override val parent: MDeclaration<*>,
@@ -130,3 +151,5 @@ class MTypeParameterClassifier(
 ) : MElement<KmClassifier.TypeParameter>, MClassifier
 
 class MTypeParameter(override val asKm: KmTypeParameter) : MElement<KmTypeParameter>
+
+class MValueParameter(override val asKm: KmValueParameter) : MElement<KmValueParameter>

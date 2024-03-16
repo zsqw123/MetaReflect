@@ -28,8 +28,8 @@ fun mMain() = testMain(preload = { MReflect.preload() }) {
 }
 
 fun main() {
-//    mMain()
-    ktMain()
+    mMain()
+//    ktMain()
 }
 
 private class Stub
