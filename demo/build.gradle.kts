@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies {
-    ksp(project(":meta-reflect"))
+    implementation(project(":meta-reflect"))
     implementation(project(":demo:api"))
 }

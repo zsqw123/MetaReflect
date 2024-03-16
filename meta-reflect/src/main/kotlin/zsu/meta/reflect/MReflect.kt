@@ -1,6 +1,7 @@
 package zsu.meta.reflect
 
 import zsu.meta.reflect.impl.MReflectImpl
+import zsu.meta.reflect.impl.PreloadStub
 
 interface MReflect {
     /**
@@ -26,6 +27,13 @@ interface MReflect {
          */
         fun get(allMapping: Collection<MReflectGeneratedMapping> = emptyList()): MReflect {
             return if (allMapping.isEmpty()) emptyMReflect else MReflectImpl(allMapping)
+        }
+
+        /**
+         * preload meta reflect classes to make fist time reflect much faster.
+         */
+        fun preload() {
+            emptyMReflect.mClassFrom(PreloadStub::class.java)
         }
     }
 }
