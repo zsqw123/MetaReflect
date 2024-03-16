@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    api(D.metadata)
 }
 
 tasks.test {
