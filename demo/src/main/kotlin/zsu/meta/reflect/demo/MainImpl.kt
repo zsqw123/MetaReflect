@@ -8,14 +8,14 @@ sealed interface SealedParent
 class ChildA(private val a: String) : SealedParent
 class ChildB(private val b: StringBuilder) : SealedParent
 
-inline fun testMain(preload: () -> Unit, onEach: (Int) -> Any) {
+inline fun testMain(count: Int = 4, preload: () -> Unit, onEach: (Int) -> Any) {
     var start = System.nanoTime()
     preload()
-    println("preload: ${(System.nanoTime() - start) / 1000_000f}ms")
-    repeat(4) {
+    println("preload: ${(System.nanoTime() - start) / 1000f}us")
+    repeat(count) {
         start = System.nanoTime()
         println(onEach(it))
-        println("$it cost: ${(System.nanoTime() - start) / 1000_000f}ms")
+        println("$it cost: ${(System.nanoTime() - start) / 1000f}us")
     }
 }
 
