@@ -4,11 +4,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Type
-import kotlin.jvm.internal.Reflection
-import kotlin.reflect.KClass
-import kotlin.reflect.KDeclarationContainer
-import kotlin.reflect.KType
-import kotlin.reflect.javaType
+import kotlin.reflect.*
 
 interface ReflectAdapter
 
@@ -34,7 +30,5 @@ interface KClassAdapter : KReflectAdapter<KClass<*>>, JavaClassReflectAdapter {
     override val asKr: KClass<*> get() = asJr.kotlin
 }
 
-interface KFileAdapter : KReflectAdapter<KDeclarationContainer>, JavaClassReflectAdapter {
-    override val asKr: KDeclarationContainer get() = Reflection.getOrCreateKotlinPackage(asJr)
-}
+interface KFileAdapter : KReflectAdapter<KDeclarationContainer>, JavaClassReflectAdapter
 

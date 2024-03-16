@@ -11,6 +11,9 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
+import kotlin.jvm.internal.Reflection
+import kotlin.reflect.KDeclarationContainer
+import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
 import org.objectweb.asm.Type as AsmType
@@ -92,7 +95,11 @@ class MClass(
 class MFile(
     override val asJr: Class<*>,
     override val asKm: KmPackage,
-) : AbsMDeclaration<KmPackage>(), KFileAdapter
+) : AbsMDeclaration<KmPackage>(), KFileAdapter {
+    override val asKr: KDeclarationContainer by lazy {
+        Reflection.getOrCreateKotlinPackage(asJr)
+    }
+}
 
 class MLambda(
     override val asKm: KmLambda
