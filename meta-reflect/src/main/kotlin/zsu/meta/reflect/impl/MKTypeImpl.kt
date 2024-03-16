@@ -3,7 +3,9 @@ package zsu.meta.reflect.impl
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.isNullable
+import zsu.meta.reflect.JClassName
 import zsu.meta.reflect.TypeParameterContainer
+import zsu.meta.reflect.asJClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
@@ -24,13 +26,15 @@ internal class MKTypeImpl(
     }
 
     override val classifier: KClassifier? by lazy {
-        when (val classifier = kmType.classifier) {
-            is KmClassifier.Class -> TODO()
-            is KmClassifier.TypeAlias -> TODO()
-            is KmClassifier.TypeParameter -> TODO()
+        val className: JClassName = when (val classifier = kmType.classifier) {
+            is KmClassifier.Class -> classifier.name.asJClass
+            is KmClassifier.TypeAlias -> classifier.name.asJClass
+            is KmClassifier.TypeParameter -> {
+                val typeParameter = typeParameterContainer.getTypeParameter(classifier.id)
+                return@lazy MKTypeParameterImpl(typeParameter.asKm, typeParameterContainer)
+            }
         }
-
-        Class.forName("").kotlin
+        Class.forName(className).kotlin
     }
 
     override val isMarkedNullable: Boolean = kmType.isNullable
