@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api(D.metadata)
+    implementation(D.asm)
 }
 
 tasks.test {
