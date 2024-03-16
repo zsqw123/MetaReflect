@@ -3,11 +3,13 @@ package zsu.meta.reflect
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.signature
+import zsu.meta.reflect.impl.MKTypeParameterImpl
 import zsu.meta.reflect.impl.WildcardTypeImpl
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
+import kotlin.reflect.KTypeParameter
 import org.objectweb.asm.Type as AsmType
 import java.lang.reflect.Type as JavaType
 
@@ -23,15 +25,6 @@ interface MClassLike<T : KmDeclarationContainer> : MElement<T>, JavaClassReflect
     val properties: List<MProperty>
     val typeAliases: List<MTypeAlias>
 }
-
-interface JavaReflectAdapter<out J> {
-    val asJr: J
-}
-
-interface JavaClassReflectAdapter : JavaReflectAdapter<Class<*>>
-interface JavaConstructorReflectAdapter : JavaReflectAdapter<Constructor<*>>
-interface JavaMethodReflectAdapter : JavaReflectAdapter<Method?>
-interface JavaFieldReflectAdapter : JavaReflectAdapter<Field>
 
 
 sealed interface MetadataContainer
@@ -229,7 +222,11 @@ class MTypeParameterClassifier(
     override val asKm: KmClassifier.TypeParameter
 ) : MElement<KmClassifier.TypeParameter>, MClassifier
 
-class MTypeParameter(override val asKm: KmTypeParameter) : MElement<KmTypeParameter>
+class MTypeParameter(
+    override val asKm: KmTypeParameter
+) : MElement<KmTypeParameter>, KReflectAdapter<KTypeParameter> {
+    override val asKr: KTypeParameter by lazy { MKTypeParameterImpl(asKm) }
+}
 
 class MValueParameter(override val asKm: KmValueParameter) : MElement<KmValueParameter>
 

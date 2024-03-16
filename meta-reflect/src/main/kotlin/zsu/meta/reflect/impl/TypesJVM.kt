@@ -7,11 +7,9 @@ import java.lang.reflect.WildcardType
  * copied from kotlin stdlib [kotlin.reflect.WildcardTypeImpl]
  */
 internal class WildcardTypeImpl(private val upperBound: Type?, private val lowerBound: Type?) : WildcardType {
-    override fun getUpperBounds(): Array<Type> =
-        arrayOf(upperBound ?: Any::class.java)
+    override fun getUpperBounds(): Array<Type> = arrayOf(upperBound ?: Any::class.java)
 
-    override fun getLowerBounds(): Array<Type> =
-        if (lowerBound == null) emptyArray() else arrayOf(lowerBound)
+    override fun getLowerBounds(): Array<Type> = if (lowerBound == null) emptyArray() else arrayOf(lowerBound)
 
     override fun getTypeName(): String = when {
         lowerBound != null -> "? super ${typeToString(lowerBound)}"
