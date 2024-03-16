@@ -6,7 +6,7 @@ import zsu.meta.reflect.impl.PreloadStub
 interface MReflect {
     /**
      * @param fallbackRuntime true if you want read metadata at runtime. set to false if you
-     *  only wants to read [MClass] in ksp generated codes.
+     *  only wants to read [MClass] by generated codes. (only supports `true` currently :)
      * @throws IllegalArgumentException if this class is not a kotlin class or didn't contain
      *  kotlin metadata or unsupported kotlin metadata format.
      */
