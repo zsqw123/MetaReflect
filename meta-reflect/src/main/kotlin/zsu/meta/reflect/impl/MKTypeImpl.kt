@@ -14,6 +14,7 @@ internal class MKTypeImpl(
     private val kmType: KmType,
     private val typeParameterContainer: TypeParameterContainer,
 ) : KType {
+    // some implementation reference for that like `createAnnotationInstance` in kotlin reflection
     // todo: not support yet
     override val annotations: List<Annotation> = emptyList()
 

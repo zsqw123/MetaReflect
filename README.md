@@ -1,7 +1,47 @@
 # MetaReflect
 
+Fast Kotlin reflect tool built by
+[kotlinx-metadata](https://github.com/JetBrains/kotlin/blob/master/libraries/kotlinx-metadata/jvm/ReadMe.md).
 
-### License
+## Usages
+
+Here is an example shows getting sealed subclasses through `MetaReflect`.
+
+```kotlin
+sealed interface SealedParent
+class ChildA : SealedParent
+class ChildB : SealedParent
+
+fun main() {
+    // preload is recommended, **NOT REQUIRED**
+    // only needed call once in whole application lifecycle.
+    MReflect.preload()
+    
+    val reflect = MReflect.get()
+    reflect.mClass<SealedParent>().sealedSubclasses // [class ChildA, class ChildB]
+}
+```
+
+## Dependencies
+
+Latest version:
+[![Maven Central](https://img.shields.io/maven-central/v/host.bytedance/meta-reflect)](https://central.sonatype.com/artifact/host.bytedance/meta-reflect)
+
+```kotlin
+dependencies {
+    implementation("host.bytedance:meta-reflect:<latest>")
+}
+```
+
+Recommended kotlin version as follows:
+
+| Recommend | Possible Compatible Version Range | meta-reflect |
+|-----------|-----------------------------------|--------------|
+| 1.9.22    | <= 2.0.X                          | 0.0.1-beta   |
+
+## Benchmark
+
+## License
 
 ```
 Copyright 2024 zsqw123
