@@ -24,7 +24,7 @@ fun ktMain() = testMain(preload = { Stub::class.supertypes }) {
 }
 
 fun mMain() = testMain(preload = { MReflect.preload() }) {
-    MReflect.get().mClass<SealedParent>().sealedSubclasses
+    MReflect.get().mClass<SealedParent>().sealedSubclassNames
 }
 
 fun main() {

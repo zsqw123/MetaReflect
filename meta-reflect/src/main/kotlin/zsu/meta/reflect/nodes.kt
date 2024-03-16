@@ -67,7 +67,7 @@ class MClass(
     val nestedClassNames: List<String> = asKm.nestedClasses
     val enumEntryNames: List<String> = asKm.enumEntries
 
-    val sealedSubclasses: List<JClassName> by lazy {
+    val sealedSubclassNames: List<JClassName> by lazy {
         asKm.sealedSubclasses.map { it.asJClass }
     }
 
