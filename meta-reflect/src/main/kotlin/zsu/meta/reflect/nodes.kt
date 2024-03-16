@@ -119,7 +119,22 @@ class MFunction(
 class MProperty(
     override val parent: MDeclaration<*>,
     override val asKm: KmProperty,
-) : MMember<KmProperty>
+) : MMember<KmProperty> {
+    val name = asKm.name
+
+    val typeParameters: List<MTypeParameter> by lazy {
+        asKm.typeParameters.map { MTypeParameter(it) }
+    }
+    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it) }
+
+    @ExperimentalContextReceivers
+    val contextReceiverTypes: List<MType> by lazy {
+        asKm.contextReceiverTypes.map { MType(it) }
+    }
+
+    val setterParameter: MValueParameter? = asKm.setterParameter?.let { MValueParameter(it) }
+    val returnType: MType = MType(asKm.returnType)
+}
 
 class MTypeAlias(
     override val parent: MDeclaration<*>,
