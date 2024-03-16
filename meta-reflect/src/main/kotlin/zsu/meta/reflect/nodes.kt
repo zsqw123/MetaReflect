@@ -3,12 +3,15 @@ package zsu.meta.reflect
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.signature
+import zsu.meta.reflect.impl.MKTypeImpl
 import zsu.meta.reflect.impl.MKTypeParameterImpl
 import zsu.meta.reflect.impl.WildcardTypeImpl
+import zsu.meta.reflect.impl.parameterId
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
+import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
 import org.objectweb.asm.Type as AsmType
 import java.lang.reflect.Type as JavaType
@@ -26,6 +29,9 @@ interface MClassLike<T : KmDeclarationContainer> : MElement<T>, JavaClassReflect
     val typeAliases: List<MTypeAlias>
 }
 
+interface TypeParameterContainer {
+    fun getTypeParameter(id: Int): MTypeParameter
+}
 
 sealed interface MetadataContainer
 
@@ -38,16 +44,16 @@ abstract class AbsMDeclaration<T : KmDeclarationContainer> : MClassLike<T>, Meta
 class MClass(
     override val asJr: Class<*>,
     override val asKm: KmClass,
-) : AbsMDeclaration<KmClass>(), JavaReflectAdapter<Class<*>> {
+) : AbsMDeclaration<KmClass>(), JavaReflectAdapter<Class<*>>, TypeParameterContainer {
     /** same as [Class.getName] */
     val jName: JClassName = asKm.name.asJClass
 
     val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it) }
+        asKm.typeParameters.map { MTypeParameter(it, this) }
     }
 
     val supertypes: List<MType> by lazy {
-        asKm.supertypes.map { MType(it) }
+        asKm.supertypes.map { MType(it, this) }
     }
 
     val constructors: List<MConstructor> by lazy {
@@ -63,11 +69,19 @@ class MClass(
     }
 
     val inlineClassUnderlyingPropertyName: String? = asKm.inlineClassUnderlyingPropertyName
-    val inlineClassUnderlyingType: MType? = asKm.inlineClassUnderlyingType?.let { MType(it) }
+    val inlineClassUnderlyingType: MType? = asKm.inlineClassUnderlyingType?.let { MType(it, this) }
 
     @ExperimentalContextReceivers
     val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it) }
+        asKm.contextReceiverTypes.map { MType(it, this) }
+    }
+
+    override fun getTypeParameter(id: Int): MTypeParameter {
+        return parameterId(typeParameters, null, id)
+    }
+
+    override fun toString(): String {
+        return "class $jName"
     }
 }
 
@@ -120,23 +134,23 @@ class MConstructor(
 class MFunction(
     override val parent: MClassLike<*>?,
     override val asKm: KmFunction,
-) : MMember<KmFunction>, JavaMethodReflectAdapter {
+) : MMember<KmFunction>, JavaMethodReflectAdapter, TypeParameterContainer {
     val name = asKm.name
     val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it) }
+        asKm.typeParameters.map { MTypeParameter(it, this) }
     }
-    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it) }
+    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it, this) }
 
     @ExperimentalContextReceivers
     val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it) }
+        asKm.contextReceiverTypes.map { MType(it, this) }
     }
 
     val valueParameters: List<MValueParameter> by lazy {
         asKm.valueParameters.map { MValueParameter(it) }
     }
 
-    val returnType: MType = MType(asKm.returnType)
+    val returnType: MType = MType(asKm.returnType, this)
 
     // null when lambda
     override val asJr: Method? by lazy {
@@ -148,26 +162,34 @@ class MFunction(
             AsmType.getMethodDescriptor(it) == descriptor
         }
     }
+
+    override fun getTypeParameter(id: Int): MTypeParameter {
+        return parameterId(typeParameters, parent, id)
+    }
+
+    override fun toString(): String {
+        return "function $name"
+    }
 }
 
 class MProperty(
     override val parent: MClassLike<*>,
     override val asKm: KmProperty,
-) : MMember<KmProperty>, JavaFieldReflectAdapter {
+) : MMember<KmProperty>, JavaFieldReflectAdapter, TypeParameterContainer {
     val name = asKm.name
 
     val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it) }
+        asKm.typeParameters.map { MTypeParameter(it, this) }
     }
-    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it) }
+    val receiverType: MType? = asKm.receiverParameterType?.let { MType(it, this) }
 
     @ExperimentalContextReceivers
     val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it) }
+        asKm.contextReceiverTypes.map { MType(it, this) }
     }
 
     val setterParameter: MValueParameter? = asKm.setterParameter?.let { MValueParameter(it) }
-    val returnType: MType = MType(asKm.returnType)
+    val returnType: MType = MType(asKm.returnType, this)
 
     override val asJr: Field by lazy {
         val parentClass = parent.asJr
@@ -176,6 +198,14 @@ class MProperty(
         )
         parentClass.declaredFields.first { it.name == jvmName }
     }
+
+    override fun getTypeParameter(id: Int): MTypeParameter {
+        TODO("Not yet implemented")
+    }
+
+    override fun toString(): String {
+        return "property $name"
+    }
 }
 
 class MTypeAlias(
@@ -183,7 +213,10 @@ class MTypeAlias(
     override val asKm: KmTypeAlias,
 ) : MMember<KmTypeAlias>
 
-class MType(override val asKm: KmType) : MElement<KmType>, JavaReflectAdapter<JavaType> {
+class MType(
+    override val asKm: KmType,
+    private val parameterContainer: TypeParameterContainer,
+) : MElement<KmType>, KTypeAdapter {
     val classifier: MClassifier = when (val classifier = asKm.classifier) {
         is KmClassifier.Class, is KmClassifier.TypeAlias -> MClassClassifier(classifier)
         is KmClassifier.TypeParameter -> MTypeParameterClassifier(classifier)
@@ -193,16 +226,13 @@ class MType(override val asKm: KmType) : MElement<KmType>, JavaReflectAdapter<Ja
         asKm.arguments.map {
             when {
                 it.type == null || it.variance == null -> MStarType
-                it.variance == KmVariance.INVARIANT -> MTypeNoVariance(it)
-                else -> MTypeWithVariance(it)
+                it.variance == KmVariance.INVARIANT -> MTypeNoVariance(it, parameterContainer)
+                else -> MTypeWithVariance(it, parameterContainer)
             }
         }
     }
 
-    override val asJr: JavaType by lazy {
-        asKm
-        TODO("Not yet implemented")
-    }
+    override val asKr: KType by lazy { MKTypeImpl(asKm, parameterContainer) }
 }
 
 sealed interface MClassifier
@@ -223,27 +253,32 @@ class MTypeParameterClassifier(
 ) : MElement<KmClassifier.TypeParameter>, MClassifier
 
 class MTypeParameter(
-    override val asKm: KmTypeParameter
+    override val asKm: KmTypeParameter,
+    private val parameterContainer: TypeParameterContainer,
 ) : MElement<KmTypeParameter>, KReflectAdapter<KTypeParameter> {
-    override val asKr: KTypeParameter by lazy { MKTypeParameterImpl(asKm) }
+    override val asKr: KTypeParameter by lazy { MKTypeParameterImpl(asKm, parameterContainer) }
 }
 
 class MValueParameter(override val asKm: KmValueParameter) : MElement<KmValueParameter>
 
 sealed interface MTypeProjection : MElement<KmTypeProjection>, JavaReflectAdapter<JavaType>
 
-data class MTypeNoVariance(override val asKm: KmTypeProjection) : MTypeProjection {
-    val type = MType(asKm.type!!)
+data class MTypeNoVariance(
+    override val asKm: KmTypeProjection, val parameterContainer: TypeParameterContainer,
+) : MTypeProjection {
+    val type = MType(asKm.type!!, parameterContainer)
     override val asJr: JavaType by lazy { type.asJr }
 }
 
-data class MTypeWithVariance(override val asKm: KmTypeProjection) : MTypeProjection {
+data class MTypeWithVariance(
+    override val asKm: KmTypeProjection, val parameterContainer: TypeParameterContainer
+) : MTypeProjection {
     val variance = when (val origin = asKm.variance!!) {
         KmVariance.IN -> MVariance.IN
         KmVariance.OUT -> MVariance.OUT
         else -> throw error("Must have variance! origin KmTypeProjection: $origin")
     }
-    val type = MType(asKm.type!!)
+    val type = MType(asKm.type!!, parameterContainer)
     override val asJr: WildcardType by lazy {
         val rawType = type.asJr
         if (variance == MVariance.OUT) WildcardTypeImpl(rawType, null)
