@@ -3,10 +3,11 @@ package zsu.meta.reflect
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.signature
+import zsu.meta.reflect.impl.WildcardTypeImpl
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 import org.objectweb.asm.Type as AsmType
 import java.lang.reflect.Type as JavaType
 
@@ -23,7 +24,7 @@ interface MClassLike<T : KmDeclarationContainer> : MElement<T>, JavaClassReflect
     val typeAliases: List<MTypeAlias>
 }
 
-interface JavaReflectAdapter<J> {
+interface JavaReflectAdapter<out J> {
     val asJr: J
 }
 
@@ -197,12 +198,18 @@ class MType(override val asKm: KmType) : MElement<KmType>, JavaReflectAdapter<Ja
 
     val arguments: List<MTypeProjection> by lazy {
         asKm.arguments.map {
-            if (it.type == null || it.variance == null) MStarType else MTypeWithVariance(it)
+            when {
+                it.type == null || it.variance == null -> MStarType
+                it.variance == KmVariance.INVARIANT -> MTypeNoVariance(it)
+                else -> MTypeWithVariance(it)
+            }
         }
     }
 
-    override val asJr: Type
-        get() = TODO("Not yet implemented")
+    override val asJr: JavaType by lazy {
+        asKm
+        TODO("Not yet implemented")
+    }
 }
 
 sealed interface MClassifier
@@ -226,23 +233,33 @@ class MTypeParameter(override val asKm: KmTypeParameter) : MElement<KmTypeParame
 
 class MValueParameter(override val asKm: KmValueParameter) : MElement<KmValueParameter>
 
-sealed interface MTypeProjection : MElement<KmTypeProjection>
+sealed interface MTypeProjection : MElement<KmTypeProjection>, JavaReflectAdapter<JavaType>
+
+data class MTypeNoVariance(override val asKm: KmTypeProjection) : MTypeProjection {
+    val type = MType(asKm.type!!)
+    override val asJr: JavaType by lazy { type.asJr }
+}
 
 data class MTypeWithVariance(override val asKm: KmTypeProjection) : MTypeProjection {
-    val variance = when (asKm.variance!!) {
-        KmVariance.INVARIANT -> MVariance.INVARIANT
+    val variance = when (val origin = asKm.variance!!) {
         KmVariance.IN -> MVariance.IN
         KmVariance.OUT -> MVariance.OUT
+        else -> throw error("Must have variance! origin KmTypeProjection: $origin")
     }
     val type = MType(asKm.type!!)
+    override val asJr: WildcardType by lazy {
+        val rawType = type.asJr
+        if (variance == MVariance.OUT) WildcardTypeImpl(rawType, null)
+        else WildcardTypeImpl(null, rawType)
+    }
 }
 
 enum class MVariance(override val asKm: KmVariance) : MElement<KmVariance> {
-    INVARIANT(KmVariance.INVARIANT),
     IN(KmVariance.IN),
     OUT(KmVariance.OUT),
 }
 
 data object MStarType : MTypeProjection {
     override val asKm: KmTypeProjection = KmTypeProjection.STAR
+    override val asJr: WildcardType = WildcardTypeImpl.STAR
 }
