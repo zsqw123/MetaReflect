@@ -44,7 +44,7 @@ abstract class AbsMDeclaration<T : KmDeclarationContainer> : MClassLike<T>, Meta
 class MClass(
     override val asJr: Class<*>,
     override val asKm: KmClass,
-) : AbsMDeclaration<KmClass>(), JavaReflectAdapter<Class<*>>, TypeParameterContainer {
+) : AbsMDeclaration<KmClass>(), KClassAdapter, TypeParameterContainer {
     /** same as [Class.getName] */
     val jName: JClassName = asKm.name.asJClass
 
@@ -92,7 +92,7 @@ class MClass(
 class MFile(
     override val asJr: Class<*>,
     override val asKm: KmPackage,
-) : AbsMDeclaration<KmPackage>(), JavaClassReflectAdapter
+) : AbsMDeclaration<KmPackage>(), KFileAdapter
 
 class MLambda(
     override val asKm: KmLambda
