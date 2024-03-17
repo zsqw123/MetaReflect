@@ -22,6 +22,9 @@ class Args(args: Array<String>) {
         }
     }
 
-    enum class Mode { KR, MR }
+    enum class Mode {
+        KR, MR,
+        KR_N, MR_N,
+    }
 }
 

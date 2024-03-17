@@ -46,11 +46,14 @@ internal class MClassImpl(
     }
 
     override val companionObjectClass: MClass? by lazy {
-        companionObjectName?.let { "$jName\$$it" }?.asMClass()
+        companionObjectName ?: return@lazy null
+        asJr.declaredClasses.first { it.name == companionObjectName }.asMClass()
+//        companionObjectName?.let { "$jName\$$it" }?.asMClass()
     }
 
     override val nestedClasses: List<MClass> by lazy {
-        nestedClassNames.map { "$jName\$$it".asMClass() }
+        asJr.declaredClasses.map { it.asMClass() }
+//        nestedClassNames.map { "$jName\$$it".asMClass() }
     }
 
     override fun getTypeParameter(id: Int): MTypeParameter {
@@ -61,5 +64,6 @@ internal class MClassImpl(
         return "class $jName"
     }
 
+    private fun Class<*>.asMClass(): MClass = metaReflect.mClassFrom(this) as MClass
     private fun JClassName.asMClass(): MClass = metaReflect.mClassFrom(this.jClass) as MClass
 }

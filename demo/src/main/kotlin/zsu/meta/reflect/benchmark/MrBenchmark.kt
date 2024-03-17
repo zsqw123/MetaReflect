@@ -3,7 +3,7 @@ package zsu.meta.reflect.benchmark
 import zsu.meta.reflect.MReflect
 import zsu.meta.reflect.mClass
 
-private val metaReflect = MReflect.get()
+val metaReflect = MReflect.get()
 
 fun metaReflectBenchmark(): Int {
     val metaReflect = metaReflect
@@ -26,7 +26,7 @@ fun kotlinReflectionBenchmark(): Int {
         .size
 }
 
-private class Stub
+class Stub
 
 // us
 data class Result(
@@ -35,29 +35,6 @@ data class Result(
     val avgCost: Float,
 ) {
     fun toCsv() = "$preloadCost,$firstTimeCost,$avgCost"
-}
-
-private inline fun benchMarkMain(count: Int, preload: () -> Unit, onEach: () -> Any): Result {
-    var start = System.nanoTime()
-    preload()
-    val preloadCost = (System.nanoTime() - start) / 1000f
-    println("preload: ${preloadCost}us")
-
-    start = System.nanoTime()
-    onEach()
-    val firstTimeCost = (System.nanoTime() - start) / 1000f
-    println("first: ${firstTimeCost}us")
-
-    var allCost = 0f
-    repeat(count) {
-        start = System.nanoTime()
-        val eachResult = onEach()
-        val singleCost = (System.nanoTime() - start) / 1000f
-        println("$it cost: ${singleCost}us, $eachResult")
-        allCost += singleCost
-    }
-
-    return Result(preloadCost, firstTimeCost, allCost / count)
 }
 
 fun main(args: Array<String>) {
@@ -71,7 +48,18 @@ fun main(args: Array<String>) {
         Args.Mode.MR -> benchMarkMain(arg.count, { MReflect.preload() }) {
             metaReflectBenchmark()
         }
+
+        Args.Mode.KR_N, Args.Mode.MR_N -> OnlyNamesBenchmark.run(arg)
     }
     arg.output.appendText("${result.toCsv()}\n")
 }
+
+//fun main() {
+//    benchMarkMain(10, { Stub::class.supertypes }) {
+//        kotlinReflectionBenchmark()
+//    }
+//    benchMarkMain(10, { MReflect.preload() }) {
+//        metaReflectBenchmark()
+//    }
+//}
 
