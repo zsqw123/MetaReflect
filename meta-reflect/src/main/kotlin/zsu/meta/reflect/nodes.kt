@@ -11,8 +11,6 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
-import kotlin.jvm.internal.Reflection
-import kotlin.reflect.KDeclarationContainer
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
 import org.objectweb.asm.Type as AsmType
@@ -30,6 +28,10 @@ interface MClassLike<T : KmDeclarationContainer> : MElement<T>, JavaClassReflect
     val functions: List<MFunction>
     val properties: List<MProperty>
     val typeAliases: List<MTypeAlias>
+
+    /** interop to [Class] **/
+    val methods: Array<Method>
+    val fields: Array<Field>
 }
 
 interface TypeParameterContainer {
@@ -38,71 +40,35 @@ interface TypeParameterContainer {
 
 sealed interface MetadataContainer
 
-abstract class AbsMDeclaration<T : KmDeclarationContainer> : MClassLike<T>, MetadataContainer {
-    override val functions: List<MFunction> by lazy { asKm.functions.map { MFunction(this, it) } }
-    override val properties: List<MProperty> by lazy { asKm.properties.map { MProperty(this, it) } }
-    override val typeAliases: List<MTypeAlias> by lazy { asKm.typeAliases.map { MTypeAlias(this, it) } }
-}
-
-/**
- * An enhancement wrapper for [Class] through kotlin metadata
- */
-class MClass(
-    override val asJr: Class<*>,
-    override val asKm: KmClass,
-) : AbsMDeclaration<KmClass>(), KClassAdapter, TypeParameterContainer {
+interface MClass : MClassLike<KmClass>,
+    MetadataContainer, KClassAdapter {
     /** same as [Class.getName] */
-    val jName: JClassName = asKm.name.asJClass
-
-    val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it, this) }
-    }
-
-    val supertypes: List<MType> by lazy {
-        asKm.supertypes.map { MType(it, this) }
-    }
-
-    val constructors: List<MConstructor> by lazy {
-        asKm.constructors.map { MConstructor(this, it) }
-    }
-
-    val companionObjectName: String? = asKm.companionObject
-    val nestedClassNames: List<String> = asKm.nestedClasses
-    val enumEntryNames: List<String> = asKm.enumEntries
-
-    val sealedSubclassNames: List<JClassName> by lazy {
-        asKm.sealedSubclasses.map { it.asJClass }
-    }
-
-    val inlineClassUnderlyingPropertyName: String? = asKm.inlineClassUnderlyingPropertyName
-    val inlineClassUnderlyingType: MType? = asKm.inlineClassUnderlyingType?.let { MType(it, this) }
+    val jName: JClassName
+    val typeParameters: List<MTypeParameter>
+    val supertypes: List<MType>
+    val constructors: List<MConstructor>
+    val companionObjectName: String?
+    val nestedClassNames: List<String>
+    val enumEntryNames: List<String>
+    val sealedSubclassNames: List<JClassName>
+    val inlineClassUnderlyingPropertyName: String?
+    val inlineClassUnderlyingType: MType?
 
     @ExperimentalContextReceivers
-    val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it, this) }
-    }
+    val contextReceiverTypes: List<MType>
 
-    override fun getTypeParameter(id: Int): MTypeParameter {
-        return parameterId(typeParameters, null, id)
-    }
-
-    override fun toString(): String {
-        return "class $jName"
-    }
+    /** interop to [Class] **/
+    val sealedSubclasses: List<Class<*>>
+    val companionObjectClass: Class<*>?
+    val nestedClasses: List<Class<*>>
 }
 
 /**
  * Represents a Kotlin package fragment that contains top-level functions, properties and type aliases.
  * [MClass] has their own data, so all classes are not included in [MFile].
  */
-class MFile(
-    override val asJr: Class<*>,
-    override val asKm: KmPackage,
-) : AbsMDeclaration<KmPackage>(), KFileAdapter {
-    override val asKr: KDeclarationContainer by lazy {
-        Reflection.getOrCreateKotlinPackage(asJr)
-    }
-}
+interface MFile : MClassLike<KmPackage>,
+    MetadataContainer, KFileAdapter
 
 class MLambda(
     override val asKm: KmLambda

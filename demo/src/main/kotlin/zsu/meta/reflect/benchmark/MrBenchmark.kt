@@ -5,6 +5,7 @@ import zsu.meta.reflect.*
 private val metaReflect = MReflect.get()
 
 fun metaReflectBenchmark(): Int {
+    val metaReflect = metaReflect
     metaReflect.mClass<SealedI>().sealedSubclasses
     metaReflect.mClass<SealedC>().sealedSubclasses
     return metaReflect.mClass<SubTarget>().nestedClasses // B
