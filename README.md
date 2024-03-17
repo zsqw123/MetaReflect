@@ -45,10 +45,10 @@ Time unit: us (microsecond), lower is better.
 
 | Benchmark Type              | Full Resolve |  Only Names |
 |-----------------------------|-------------:|------------:|
-| Kotlin Reflect (warmup)     |  182,641.966 | 175,242.409 |
-| Kotlin Reflect (first time) |  115,888.439 | 110,907.128 |
-| Meta Reflect (warmup)       |   79,314.122 |  79,842.884 |
-| Meta Reflect (first time)   |   82,755.670 |  66,865.890 |
+| Kotlin Reflect (warmup)     |  182,641.966 | 178,144,197 |
+| Kotlin Reflect (first time) |  115,888.439 |  30,819.065 |
+| Meta Reflect (warmup)       |   79,314.122 |  79,617.180 |
+| Meta Reflect (first time)   |   82,755.670 |   5,193.286 |
 
 1. Full Benchmark
 2. Only Resolve Name

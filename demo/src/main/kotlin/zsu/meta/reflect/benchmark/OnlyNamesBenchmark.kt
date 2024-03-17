@@ -27,12 +27,12 @@ object OnlyNamesBenchmark {
     fun run(arg: Args): Result {
         val result = when (arg.mode) {
             Args.Mode.KR_N -> benchMarkMain(arg.count, { Stub::class.supertypes }) {
-                kotlinReflectionBenchmark()
+                kotlinReflectNameBenchmark()
             }
 
 
             Args.Mode.MR_N -> benchMarkMain(arg.count, { MReflect.preload() }) {
-                metaReflectBenchmark()
+                metaReflectNameBenchmark()
             }
 
             else -> error("cannot process it")
@@ -42,7 +42,7 @@ object OnlyNamesBenchmark {
 }
 
 fun main() {
-    val args = arrayOf("-m", "KR_N", "-c", "10")
+    val args = arrayOf("-m", "MR_N", "-c", "10")
     val arg = Args(args)
     OnlyNamesBenchmark.run(arg)
 }
