@@ -41,17 +41,23 @@ Recommended kotlin version as follows:
 
 ## Benchmark
 
-Time unit: us (microsecond), lower is better.
+- Meta Reflect: 0.0.2-beta, Kotlin Reflect: 1.9.22
+- Test codes: [MrBenchmark.kt](demo/src/main/kotlin/zsu/meta/reflect/benchmark/MrBenchmark.kt)
+- Time unit: us (microsecond), lower is better.
 
-| Benchmark Type              | Full Resolve |  Only Names |
-|-----------------------------|-------------:|------------:|
-| Kotlin Reflect (warmup)     |  182,641.966 | 178,144,197 |
-| Kotlin Reflect (first time) |  115,888.439 |  30,819.065 |
-| Meta Reflect (warmup)       |   79,314.122 |  79,617.180 |
-| Meta Reflect (first time)   |   82,755.670 |   5,193.286 |
+| Benchmark Type              | Fully Resolve |  Only Names |
+|-----------------------------|--------------:|------------:|
+| Kotlin Reflect (warmup)     |   182,641.966 | 178,144,197 |
+| Kotlin Reflect (first time) |   115,888.439 |  30,819.065 |
+| Meta Reflect (warmup)       |    79,842.884 |  79,617.180 |
+| Meta Reflect (first time)   |    66,865.890 |   5,193.286 |
 
-1. Full Benchmark
-2. Only Resolve Name
+1. Only Names: Meta Reflect supports resolve class names without resolve it as a full `MClass`.
+   e.g. `MClass.sealedSubclassNames` will only return sealed subclasses names, but not resolve them as a `MClass`.
+2. Fully Resolve: e.g. resolve sealed subclasses as `MClass` rather than only names.
+3. Reflection operation will be fast when access it at the second time, so we only calculate the first time cost. 
+
+In general, Meta Reflect has better performance(~1.73x) than Kotlin Reflect, and will be faster if not resolve 
 
 ## License
 
