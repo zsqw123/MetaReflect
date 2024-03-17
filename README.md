@@ -57,7 +57,7 @@ Recommended kotlin version as follows:
 2. Fully Resolve: e.g. resolve sealed subclasses as `MClass` rather than only names.
 3. Reflection operation will be fast when access it at the second time, so we only calculate the first time cost. 
 
-In general, Meta Reflect has better performance(~1.73x) than Kotlin Reflect, and will be faster if not resolve 
+In general, Meta Reflect has better performance(~1.73x) than Kotlin Reflect, and will be faster(~5.95x) if not resolve 
 
 ## License
 
