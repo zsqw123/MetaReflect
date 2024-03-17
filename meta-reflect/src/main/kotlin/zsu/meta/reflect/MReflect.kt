@@ -5,18 +5,16 @@ import zsu.meta.reflect.impl.PreloadStub
 
 interface MReflect {
     /**
-     * @param fallbackRuntime true if you want read metadata at runtime. set to false if you
-     *  only wants to read [MClass] by generated codes. (only supports `true` currently :)
      * @throws IllegalArgumentException if this class is not a kotlin class or didn't contain
      *  kotlin metadata or unsupported kotlin metadata format.
      */
-    fun mClassFrom(jClass: Class<*>, fallbackRuntime: Boolean = true): MetadataContainer
+    fun mClassFrom(jClass: Class<*>): MetadataContainer
 
     /**
      * @see mClassFrom
      */
-    fun mClassFrom(jClassName: JClassName, fallbackRuntime: Boolean = true): MetadataContainer {
-        return mClassFrom(Class.forName(jClassName), fallbackRuntime)
+    fun mClassFrom(jClassName: JClassName): MetadataContainer {
+        return mClassFrom(Class.forName(jClassName))
     }
 
     companion object {
@@ -43,6 +41,6 @@ interface MReflectGeneratedMapping {
     fun getMetadataByName(name: JClassName): Metadata
 }
 
-inline fun <reified T> MReflect.mClass(fallbackRuntime: Boolean = true): MClass {
-    return mClassFrom(T::class.java, fallbackRuntime) as MClass
+inline fun <reified T> MReflect.mClass(): MClass {
+    return mClassFrom(T::class.java) as MClass
 }

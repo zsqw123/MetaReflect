@@ -8,6 +8,7 @@ import zsu.meta.reflect.*
  * An enhancement wrapper for [Class] through kotlin metadata
  */
 internal class MClassImpl(
+    private val metaReflect: MReflect,
     override val asJr: Class<*>,
     override val asKm: KmClass,
 ) : AbsMDeclaration<KmClass>(), MClass, TypeParameterContainer {
@@ -40,16 +41,16 @@ internal class MClassImpl(
         asKm.contextReceiverTypes.map { MType(it, this) }
     }
 
-    override val sealedSubclasses: List<Class<*>> by lazy {
-        sealedSubclassNames.map(JClassName::jClass)
+    override val sealedSubclasses: List<MClass> by lazy {
+        sealedSubclassNames.map { it.asMClass() }
     }
 
-    override val companionObjectClass: Class<*>? by lazy {
-        companionObjectName?.let { "$jName\$$it".jClass }
+    override val companionObjectClass: MClass? by lazy {
+        companionObjectName?.let { "$jName\$$it" }?.asMClass()
     }
 
-    override val nestedClasses: List<Class<*>> by lazy {
-        nestedClassNames.map { "$jName\$$it".jClass }
+    override val nestedClasses: List<MClass> by lazy {
+        nestedClassNames.map { "$jName\$$it".asMClass() }
     }
 
     override fun getTypeParameter(id: Int): MTypeParameter {
@@ -59,4 +60,6 @@ internal class MClassImpl(
     override fun toString(): String {
         return "class $jName"
     }
+
+    private fun JClassName.asMClass(): MClass = metaReflect.mClassFrom(this.jClass) as MClass
 }

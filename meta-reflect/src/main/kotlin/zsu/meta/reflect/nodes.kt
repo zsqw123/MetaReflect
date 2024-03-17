@@ -58,9 +58,9 @@ interface MClass : MClassLike<KmClass>,
     val contextReceiverTypes: List<MType>
 
     /** interop to [Class] **/
-    val sealedSubclasses: List<Class<*>>
-    val companionObjectClass: Class<*>?
-    val nestedClasses: List<Class<*>>
+    val sealedSubclasses: List<MClass>
+    val companionObjectClass: MClass?
+    val nestedClasses: List<MClass>
 }
 
 /**

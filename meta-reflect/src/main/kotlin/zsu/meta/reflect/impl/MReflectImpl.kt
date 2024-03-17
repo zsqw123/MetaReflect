@@ -10,12 +10,12 @@ internal class MReflectImpl(
         it.names.map { jClassName: JClassName -> jClassName to it }
     }.toMap()
 
-    private val cache: LinkedHashMap<JClassName, MetadataContainer> = linkedMapOf()
+    private val cache: LinkedHashMap<Class<*>, MetadataContainer> = linkedMapOf()
 
-    override fun mClassFrom(jClass: Class<*>, fallbackRuntime: Boolean): MetadataContainer {
-        val className = jClass.name
-        val cached = cache[className]
+    override fun mClassFrom(jClass: Class<*>): MetadataContainer {
+        val cached = cache[jClass]
         if (cached != null) return cached
+        val className = jClass.name
         val metadataFromGeneratedMapping = mapping.takeIf { it.isNotEmpty() }
             ?.get(className)?.getMetadataByName(className)
         val metadata = metadataFromGeneratedMapping
@@ -23,7 +23,7 @@ internal class MReflectImpl(
             ?: throw IllegalArgumentException("class: ${jClass.name} didn't contain kotlin metadata")
         val classMetadata = KotlinClassMetadata.readLenient(metadata)
         val metadataContainer = when (classMetadata) {
-            is KotlinClassMetadata.Class -> MClassImpl(jClass, classMetadata.kmClass)
+            is KotlinClassMetadata.Class -> MClassImpl(this, jClass, classMetadata.kmClass)
             is KotlinClassMetadata.FileFacade -> MFileImpl(jClass, classMetadata.kmPackage)
             is KotlinClassMetadata.SyntheticClass -> classMetadata.kmLambda?.let { MLambda(it) }
             else -> null
@@ -31,7 +31,7 @@ internal class MReflectImpl(
             "unsupported kotlin metadata type: $classMetadata for class: ${jClass.name}"
         )
         synchronized(this) {
-            cache[className] = metadataContainer
+            cache[jClass] = metadataContainer
         }
         return metadataContainer
     }

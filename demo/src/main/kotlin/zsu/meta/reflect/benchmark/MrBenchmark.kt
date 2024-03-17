@@ -1,6 +1,7 @@
 package zsu.meta.reflect.benchmark
 
-import zsu.meta.reflect.*
+import zsu.meta.reflect.MReflect
+import zsu.meta.reflect.mClass
 
 private val metaReflect = MReflect.get()
 
@@ -9,9 +10,9 @@ fun metaReflectBenchmark(): Int {
     metaReflect.mClass<SealedI>().sealedSubclasses
     metaReflect.mClass<SealedC>().sealedSubclasses
     return metaReflect.mClass<SubTarget>().nestedClasses // B
-        .flatMap { (metaReflect.mClassFrom(it) as MClass).nestedClasses } // C
-        .flatMap { (metaReflect.mClassFrom(it) as MClass).nestedClasses } // D
-        .flatMap { (metaReflect.mClassFrom(it) as MClass).nestedClasses } // E
+        .flatMap { it.nestedClasses } // C
+        .flatMap { it.nestedClasses } // D
+        .flatMap { it.nestedClasses } // E
         .size
 }
 
