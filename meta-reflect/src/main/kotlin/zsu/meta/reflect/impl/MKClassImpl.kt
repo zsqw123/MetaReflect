@@ -7,11 +7,11 @@ import zsu.meta.reflect.*
 /**
  * An enhancement wrapper for [Class] through kotlin metadata
  */
-internal class MClassImpl(
+internal class MKClassImpl(
     private val metaReflect: MReflect,
     override val asJr: Class<*>,
     override val asKm: KmClass,
-) : AbsMDeclaration<KmClass>(), MClass, TypeParameterContainer {
+) : AbsKMDeclaration<KmClass>(), MKClass, TypeParameterContainer {
     override val jName: JClassName = asKm.name.asJClass
     override val typeParameters: List<MTypeParameter> by lazy {
         asKm.typeParameters.map { MTypeParameter(it, this) }
@@ -22,7 +22,7 @@ internal class MClassImpl(
     }
 
     override val constructors: List<MConstructor> by lazy {
-        asKm.constructors.map { MConstructor(this, it) }
+        asKm.constructors.map { MKConstructorImpl(this, it) }
     }
 
     override val companionObjectName: String? = asKm.companionObject

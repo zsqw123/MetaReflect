@@ -13,7 +13,7 @@ internal fun KmVariance.asKVariance(): KVariance = when (this) {
 }
 
 internal fun TypeParameterContainer.parameterId(
-    typeParameters: Collection<MTypeParameter>, parent: MElement<*>?, id: Int,
+    typeParameters: Collection<MTypeParameter>, parent: MElement?, id: Int,
 ): MTypeParameter {
     if (typeParameters.isEmpty()) {
         if (parent is TypeParameterContainer) return parent.getTypeParameter(id)

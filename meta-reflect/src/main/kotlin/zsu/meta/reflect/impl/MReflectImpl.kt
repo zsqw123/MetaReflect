@@ -23,7 +23,7 @@ internal class MReflectImpl(
             ?: throw IllegalArgumentException("class: ${jClass.name} didn't contain kotlin metadata")
         val classMetadata = KotlinClassMetadata.readLenient(metadata)
         val metadataContainer = when (classMetadata) {
-            is KotlinClassMetadata.Class -> MClassImpl(this, jClass, classMetadata.kmClass)
+            is KotlinClassMetadata.Class -> MKClassImpl(this, jClass, classMetadata.kmClass)
             is KotlinClassMetadata.FileFacade -> MFileImpl(jClass, classMetadata.kmPackage)
             is KotlinClassMetadata.SyntheticClass -> classMetadata.kmLambda?.let { MLambda(it) }
             else -> null

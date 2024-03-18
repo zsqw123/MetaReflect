@@ -2,96 +2,42 @@ package zsu.meta.reflect
 
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.fieldSignature
-import kotlinx.metadata.jvm.signature
 import zsu.meta.reflect.impl.MKTypeImpl
 import zsu.meta.reflect.impl.MKTypeParameterImpl
 import zsu.meta.reflect.impl.WildcardTypeImpl
 import zsu.meta.reflect.impl.parameterId
 import java.lang.reflect.Field
-import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
-import org.objectweb.asm.Type as AsmType
 import java.lang.reflect.Type as JavaType
 
-interface MElement
+interface KtElement<T : Any> : MElement {
+    /** represented kotlin metadata element. */
+    val asKm: T
+}
+
+interface MKClass : MClass, KtElement<KmClass>
 
 /**
- * quite same apis with [KmDeclarationContainer], maybe you take it as a wrap for that.
+ * Represents a Kotlin package fragment that contains top-level functions, properties and type aliases.
+ * [MClass] has their own data, so all classes are not included in [MFile].
  */
-interface MClassLike : MElement, JavaClassReflectAdapter {
-    val functions: List<MFunction>
-    val properties: List<MProperty>
-    val typeAliases: List<MTypeAlias>
+interface MFile : KtElement<KmPackage>, MetadataContainer, KFileAdapter
 
-    /** interop to [Class] **/
-    val methods: Array<Method>
-    val fields: Array<Field>
+class MLambda(
+    override val asKm: KmLambda
+) : KtElement<KmLambda>, MetadataContainer {
+    val function: MFunction = MFunction(null, asKm.function)
 }
 
-interface TypeParameterContainer {
-    fun getTypeParameter(id: Int): MTypeParameter
-}
+interface MKConstructor : MConstructor, KtElement<KmConstructor>
 
-sealed interface MetadataContainer
 
-interface MClass : MClassLike,
-    MetadataContainer, KClassAdapter {
-    /** same as [Class.getName] */
-    val jName: JClassName
-    val typeParameters: List<MTypeParameter>
-    val supertypes: List<MType>
-    val constructors: List<MConstructor>
-    val companionObjectName: String?
-    val nestedClassNames: List<String>
-    val enumEntryNames: List<String>
-    val sealedSubclassNames: List<JClassName>
-    val inlineClassUnderlyingPropertyName: String?
-    val inlineClassUnderlyingType: MType?
-
-    @ExperimentalContextReceivers
-    val contextReceiverTypes: List<MType>
-
-    /** interop to [Class] **/
-    val sealedSubclasses: List<MClass>
-    val companionObjectClass: MClass?
-    val nestedClasses: List<MClass>
-}
-
-/**
- * member of class/file, such as [MFunction] or [MProperty]
- */
-interface MMember<T : Any> : MElement {
-    /**
-     * returns null if no declaration parent or synthetic declaration.
-     */
-    val parent: MClassLike?
-}
-
-interface MConstructor : MMember<KmConstructor>, JavaConstructorReflectAdapter {
-    val valueParameters: List<MValueParameter>
-}
-
-interface MFunction: MMember<KmFunction>, JavaMethodReflectAdapter, TypeParameterContainer {
-    val name :String
-    val typeParameters: List<MTypeParameter>
-    val receiverType: MType?
-
-    @ExperimentalContextReceivers
-    val contextReceiverTypes: List<MType>
-
-    val valueParameters: List<MValueParameter>
-
-    val returnType: MType
-
-    override fun getTypeParameter(id: Int): MTypeParameter {
-        return parameterId(typeParameters, parent, id)
-    }
-}
+interface MKFunction : MFunction, KtElement<KmFunction>
 
 class MProperty(
-    override val parent: MClassLike<*>,
+    override val parent: MClassLike,
     override val asKm: KmProperty,
 ) : MMember<KmProperty>, JavaFieldReflectAdapter, TypeParameterContainer {
     val name = asKm.name
