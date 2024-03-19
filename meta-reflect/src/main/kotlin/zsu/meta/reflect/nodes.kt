@@ -89,7 +89,7 @@ interface MProperty : MMember<KmProperty>, JavaFieldReflectAdapter {
     val returnType: MType
 }
 
-interface MType : MElement, KTypeAdapter {
+interface MType : MElement, JavaTypeAdapter {
     val classifier: MClassifier
     val arguments: List<MTypeProjection>
 }

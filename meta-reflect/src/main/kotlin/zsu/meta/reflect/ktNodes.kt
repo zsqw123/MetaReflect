@@ -43,7 +43,7 @@ interface MTypeAlias : MMember<KmTypeAlias>, KtElement<KmTypeAlias> {
     val expandedType: MType
 }
 
-interface MKType : MType, KtElement<KmType>
+interface MKType : MType, KTypeAdapter, KtElement<KmType>
 
 class MKClassClassifier(override val asKm: KmClassifier) : MClassClassifier, KtElement<KmClassifier> {
     /** same as [Class.getName] */

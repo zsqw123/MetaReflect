@@ -11,8 +11,9 @@ internal class MJClassImpl(
     override val jName: JClassName = asJr.name
     override val typeParameters: List<MTypeParameter>
         get() = TODO("Not yet implemented")
-    override val supertypes: List<MType>
-        get() = TODO("Not yet implemented")
+    override val supertypes: List<MType> by lazy {
+        listOf(asJr.genericSuperclass, *asJr.genericInterfaces).map { MJTypeImpl(it) }
+    }
     override val constructors: List<MConstructor>
         get() = TODO("Not yet implemented")
 

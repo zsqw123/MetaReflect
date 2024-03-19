@@ -25,8 +25,9 @@ interface JavaClassReflectAdapter : JavaReflectAdapter<Class<*>>
 interface JavaConstructorReflectAdapter : JavaReflectAdapter<Constructor<*>>
 interface JavaMethodReflectAdapter : JavaReflectAdapter<Method?>
 interface JavaFieldReflectAdapter : JavaReflectAdapter<Field>
+interface JavaTypeAdapter: JavaReflectAdapter<Type>
 
-interface KTypeAdapter : KReflectAdapter<KType>, JavaReflectAdapter<Type> {
+interface KTypeAdapter : KReflectAdapter<KType>, JavaTypeAdapter {
     @OptIn(ExperimentalStdlibApi::class)
     override val asJr: Type get() = asKr.javaType
 }
