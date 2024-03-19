@@ -26,15 +26,15 @@ internal class MKClassImpl(
         asKm.constructors.map { MKConstructorImpl(this, it) }
     }
 
-    override val companionObjectName: String? = asKm.companionObject
-    override val nestedClassNames: List<String> = asKm.nestedClasses
-    override val enumEntryNames: List<String> = asKm.enumEntries
+    override val companionObjectName: SimpleName? = asKm.companionObject
+    override val nestedClassNames: List<SimpleName> = asKm.nestedClasses
+    override val enumEntryNames: List<SimpleName> = asKm.enumEntries
 
     override val sealedSubclassNames: List<JClassName> by lazy {
         asKm.sealedSubclasses.map { it.asJClass }
     }
 
-    override val inlineClassUnderlyingPropertyName: String? = asKm.inlineClassUnderlyingPropertyName
+    override val inlineClassUnderlyingPropertyName: SimpleName? = asKm.inlineClassUnderlyingPropertyName
     override val inlineClassUnderlyingType: MKTypeImpl? = asKm.inlineClassUnderlyingType?.let { MKTypeImpl(it, this) }
 
     @ExperimentalContextReceivers

@@ -34,11 +34,11 @@ interface MClass : MClassLike,
     val typeParameters: List<MTypeParameter>
     val supertypes: List<MType>
     val constructors: List<MConstructor>
-    val companionObjectName: String?
-    val nestedClassNames: List<String>
-    val enumEntryNames: List<String>
+    val companionObjectName: SimpleName?
+    val nestedClassNames: List<SimpleName>
+    val enumEntryNames: List<SimpleName>
     val sealedSubclassNames: List<JClassName>
-    val inlineClassUnderlyingPropertyName: String?
+    val inlineClassUnderlyingPropertyName: SimpleName?
     val inlineClassUnderlyingType: MType?
 
     @ExperimentalContextReceivers
