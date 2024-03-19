@@ -19,11 +19,11 @@ interface MClassLike : MElement, JavaClassReflectAdapter {
     val typeAliases: List<MTypeAlias>
 
     /** interop to [Class] **/
-    val methods: Array<Method>
-    val fields: Array<Field>
+    val methods: Array<Method> /** [Class.getDeclaredMethods] */
+    val fields: Array<Field> /** [Class.getDeclaredFields] */
+    val enumEntries: Array<Enum<*>> /** [Class.getEnumConstants] */
+    val annotations: Array<Annotation> /** [Class.getDeclaredAnnotations] */
 }
-
-
 
 sealed interface MetadataContainer
 
@@ -73,7 +73,6 @@ interface MFunction : MMember<KmFunction>, JavaMethodReflectAdapter {
     val contextReceiverTypes: List<MType>
 
     val valueParameters: List<MValueParameter>
-
     val returnType: MType
 }
 

@@ -3,7 +3,6 @@ package zsu.meta.reflect.impl.k
 import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.KmClass
 import zsu.meta.reflect.*
-import zsu.meta.reflect.impl.AbsKMDeclaration
 import zsu.meta.reflect.impl.parameterId
 
 /**

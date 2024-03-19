@@ -2,6 +2,7 @@ package zsu.meta.reflect.impl
 
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import zsu.meta.reflect.*
+import zsu.meta.reflect.impl.j.MJClassImpl
 import zsu.meta.reflect.impl.k.MFileImpl
 import zsu.meta.reflect.impl.k.MKClassImpl
 
@@ -14,7 +15,7 @@ internal class MReflectImpl(
 
     private val cache: LinkedHashMap<Class<*>, MetadataContainer> = linkedMapOf()
 
-    override fun mClassFrom(jClass: Class<*>): MetadataContainer {
+    override fun mClassFrom(jClass: Class<*>, fallbackJavaImpl: Boolean): MetadataContainer {
         val cached = cache[jClass]
         if (cached != null) return cached
         val className = jClass.name
@@ -22,16 +23,22 @@ internal class MReflectImpl(
             ?.get(className)?.getMetadataByName(className)
         val metadata = metadataFromGeneratedMapping
             ?: jClass.getDeclaredAnnotation(Metadata::class.java)
-            ?: throw IllegalArgumentException("class: ${jClass.name} didn't contain kotlin metadata")
-        val classMetadata = KotlinClassMetadata.readLenient(metadata)
-        val metadataContainer = when (classMetadata) {
-            is KotlinClassMetadata.Class -> MKClassImpl(this, jClass, classMetadata.kmClass)
-            is KotlinClassMetadata.FileFacade -> MFileImpl(jClass, classMetadata.kmPackage)
-            is KotlinClassMetadata.SyntheticClass -> classMetadata.kmLambda?.let { MLambda(it) }
-            else -> null
-        } ?: throw IllegalArgumentException(
-            "unsupported kotlin metadata type: $classMetadata for class: ${jClass.name}"
-        )
+
+        val metadataContainer: MetadataContainer = if (metadata == null) {
+            if (fallbackJavaImpl) MJClassImpl(this, jClass)
+            else throw IllegalArgumentException("class: $className didn't contain kotlin metadata")
+        } else {
+            val classMetadata = KotlinClassMetadata.readLenient(metadata)
+            when (classMetadata) {
+                is KotlinClassMetadata.Class -> MKClassImpl(this, jClass, classMetadata.kmClass)
+                is KotlinClassMetadata.FileFacade -> MFileImpl(jClass, classMetadata.kmPackage)
+                is KotlinClassMetadata.SyntheticClass -> classMetadata.kmLambda?.let { MLambda(it) }
+                else -> null
+            } ?: throw IllegalArgumentException(
+                "unsupported kotlin metadata type: $classMetadata for class: $className"
+            )
+        }
+
         synchronized(this) {
             cache[jClass] = metadataContainer
         }

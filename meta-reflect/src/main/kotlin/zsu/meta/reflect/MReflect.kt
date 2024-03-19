@@ -5,15 +5,16 @@ import zsu.meta.reflect.impl.PreloadStub
 
 interface MReflect {
     /**
-     * @throws IllegalArgumentException if this class is not a kotlin class or didn't contain
-     *  kotlin metadata or unsupported kotlin metadata format.
+     * @throws IllegalArgumentException if this class is not a kotlin class
+     *  or cannot fallback to java impl or didn't contain kotlin metadata
+     *  or unsupported kotlin metadata format.
      */
-    fun mClassFrom(jClass: Class<*>): MetadataContainer
+    fun mClassFrom(jClass: Class<*>, fallbackJavaImpl: Boolean = true): MetadataContainer
 
     /**
      * @see mClassFrom
      */
-    fun mClassFrom(jClassName: JClassName): MetadataContainer {
+    fun mClassFrom(jClassName: JClassName, fallbackJavaImpl: Boolean = true): MetadataContainer {
         return mClassFrom(Class.forName(jClassName))
     }
 
@@ -41,6 +42,6 @@ interface MReflectGeneratedMapping {
     fun getMetadataByName(name: JClassName): Metadata
 }
 
-inline fun <reified T> MReflect.mClass(): MClass {
-    return mClassFrom(T::class.java) as MClass
+inline fun <reified T> MReflect.mClass(fallbackJavaImpl: Boolean = true): MClass {
+    return mClassFrom(T::class.java, fallbackJavaImpl) as MClass
 }

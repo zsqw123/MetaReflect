@@ -2,7 +2,6 @@ package zsu.meta.reflect.impl.k
 
 import kotlinx.metadata.KmPackage
 import zsu.meta.reflect.MFile
-import zsu.meta.reflect.impl.AbsKMDeclaration
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KDeclarationContainer
 
