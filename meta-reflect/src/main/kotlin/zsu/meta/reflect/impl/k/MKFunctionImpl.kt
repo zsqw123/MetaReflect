@@ -1,9 +1,10 @@
-package zsu.meta.reflect.impl
+package zsu.meta.reflect.impl.k
 
 import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.jvm.signature
 import zsu.meta.reflect.*
+import zsu.meta.reflect.impl.parameterId
 import java.lang.reflect.Method
 import org.objectweb.asm.Type as AsmType
 
@@ -13,23 +14,23 @@ import org.objectweb.asm.Type as AsmType
 internal class MKFunctionImpl(
     override val parent: MClassLike?,
     override val asKm: KmFunction,
-) : MKFunction {
+) : MKFunction, MKTypeParameterContainer {
     override val name = asKm.name
-    override val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it, this) }
+    override val typeParameters: List<MKTypeParameter> by lazy {
+        asKm.typeParameters.map { MKTypeParameter(it, this) }
     }
-    override val receiverType: MType? = asKm.receiverParameterType?.let { MType(it, this) }
+    override val receiverType: MType? = asKm.receiverParameterType?.let { MKTypeImpl(it, this) }
 
     @ExperimentalContextReceivers
-    override val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it, this) }
+    override val contextReceiverTypes: List<MKTypeImpl> by lazy {
+        asKm.contextReceiverTypes.map { MKTypeImpl(it, this) }
     }
 
-    override val valueParameters: List<MValueParameter> by lazy {
-        asKm.valueParameters.map { MValueParameter(it) }
+    override val valueParameters: List<MKValueParameter> by lazy {
+        asKm.valueParameters.map { MKValueParameter(it, this) }
     }
 
-    override val returnType: MType = MType(asKm.returnType, this)
+    override val returnType: MKTypeImpl = MKTypeImpl(asKm.returnType, this)
 
     // null when lambda
     override val asJr: Method? by lazy {
@@ -42,8 +43,8 @@ internal class MKFunctionImpl(
         }
     }
 
-    override fun getTypeParameter(id: Int): MTypeParameter {
-        return parameterId(typeParameters, parent, id)
+    override fun getTypeParameter(id: Int): MKTypeParameter {
+        return parameterId(parent, id)
     }
 
     override fun toString(): String {

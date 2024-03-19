@@ -1,4 +1,4 @@
-package zsu.meta.reflect.impl
+package zsu.meta.reflect.impl.type
 
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType

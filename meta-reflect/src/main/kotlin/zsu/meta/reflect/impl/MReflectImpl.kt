@@ -2,6 +2,8 @@ package zsu.meta.reflect.impl
 
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import zsu.meta.reflect.*
+import zsu.meta.reflect.impl.k.MFileImpl
+import zsu.meta.reflect.impl.k.MKClassImpl
 
 internal class MReflectImpl(
     allMapping: Collection<MReflectGeneratedMapping>,

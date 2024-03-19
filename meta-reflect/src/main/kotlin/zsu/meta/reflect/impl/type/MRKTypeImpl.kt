@@ -1,18 +1,19 @@
-package zsu.meta.reflect.impl
+package zsu.meta.reflect.impl.type
 
 import kotlinx.metadata.KmClassifier
 import kotlinx.metadata.KmType
 import kotlinx.metadata.isNullable
 import zsu.meta.reflect.JClassName
-import zsu.meta.reflect.TypeParameterContainer
 import zsu.meta.reflect.asJClass
+import zsu.meta.reflect.impl.asKVariance
+import zsu.meta.reflect.impl.k.MKTypeParameterContainer
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 
-internal class MKTypeImpl(
+internal class MRKTypeImpl(
     private val kmType: KmType,
-    private val typeParameterContainer: TypeParameterContainer,
+    private val typeParameterContainer: MKTypeParameterContainer,
 ) : KType {
     // some implementation reference for that like `createAnnotationInstance` in kotlin reflection
     // todo: not support yet
@@ -22,7 +23,7 @@ internal class MKTypeImpl(
         kmType.arguments.map {
             val (variance, type) = it
             if (variance == null || type == null) KTypeProjection.STAR
-            else KTypeProjection(variance.asKVariance(), MKTypeImpl(type, typeParameterContainer))
+            else KTypeProjection(variance.asKVariance(), MRKTypeImpl(type, typeParameterContainer))
         }
     }
 
@@ -32,7 +33,7 @@ internal class MKTypeImpl(
             is KmClassifier.TypeAlias -> classifier.name.asJClass
             is KmClassifier.TypeParameter -> {
                 val typeParameter = typeParameterContainer.getTypeParameter(classifier.id)
-                return@lazy MKTypeParameterImpl(typeParameter.asKm, typeParameterContainer)
+                return@lazy MRKTypeParameterImpl(typeParameter.asKm, typeParameterContainer)
             }
         }
         Class.forName(className).kotlin

@@ -1,20 +1,21 @@
-package zsu.meta.reflect.impl
+package zsu.meta.reflect.impl.type
 
 import kotlinx.metadata.KmTypeParameter
 import kotlinx.metadata.isReified
-import zsu.meta.reflect.TypeParameterContainer
+import zsu.meta.reflect.impl.asKVariance
+import zsu.meta.reflect.impl.k.MKTypeParameterContainer
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeParameter
 import kotlin.reflect.KVariance
 
-internal class MKTypeParameterImpl(
+internal class MRKTypeParameterImpl(
     typeParameter: KmTypeParameter,
-    typeParameterContainer: TypeParameterContainer,
+    typeParameterContainer: MKTypeParameterContainer,
 ) : KTypeParameter {
     override val isReified: Boolean = typeParameter.isReified
     override val name: String = typeParameter.name
     override val upperBounds: List<KType> = typeParameter.upperBounds.map {
-        MKTypeImpl(it, typeParameterContainer)
+        MRKTypeImpl(it, typeParameterContainer)
     }
     override val variance: KVariance = typeParameter.variance.asKVariance()
 }

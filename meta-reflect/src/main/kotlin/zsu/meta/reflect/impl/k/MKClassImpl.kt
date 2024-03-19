@@ -1,8 +1,10 @@
-package zsu.meta.reflect.impl
+package zsu.meta.reflect.impl.k
 
 import kotlinx.metadata.ExperimentalContextReceivers
 import kotlinx.metadata.KmClass
 import zsu.meta.reflect.*
+import zsu.meta.reflect.impl.AbsKMDeclaration
+import zsu.meta.reflect.impl.parameterId
 
 /**
  * An enhancement wrapper for [Class] through kotlin metadata
@@ -11,14 +13,14 @@ internal class MKClassImpl(
     private val metaReflect: MReflect,
     override val asJr: Class<*>,
     override val asKm: KmClass,
-) : AbsKMDeclaration<KmClass>(), MKClass, TypeParameterContainer {
+) : AbsKMDeclaration<KmClass>(), MKClass, MKTypeParameterContainer {
     override val jName: JClassName = asKm.name.asJClass
-    override val typeParameters: List<MTypeParameter> by lazy {
-        asKm.typeParameters.map { MTypeParameter(it, this) }
+    override val typeParameters: List<MKTypeParameter> by lazy {
+        asKm.typeParameters.map { MKTypeParameter(it, this) }
     }
 
-    override val supertypes: List<MType> by lazy {
-        asKm.supertypes.map { MType(it, this) }
+    override val supertypes: List<MKTypeImpl> by lazy {
+        asKm.supertypes.map { MKTypeImpl(it, this) }
     }
 
     override val constructors: List<MConstructor> by lazy {
@@ -34,11 +36,11 @@ internal class MKClassImpl(
     }
 
     override val inlineClassUnderlyingPropertyName: String? = asKm.inlineClassUnderlyingPropertyName
-    override val inlineClassUnderlyingType: MType? = asKm.inlineClassUnderlyingType?.let { MType(it, this) }
+    override val inlineClassUnderlyingType: MKTypeImpl? = asKm.inlineClassUnderlyingType?.let { MKTypeImpl(it, this) }
 
     @ExperimentalContextReceivers
-    override val contextReceiverTypes: List<MType> by lazy {
-        asKm.contextReceiverTypes.map { MType(it, this) }
+    override val contextReceiverTypes: List<MKTypeImpl> by lazy {
+        asKm.contextReceiverTypes.map { MKTypeImpl(it, this) }
     }
 
     override val sealedSubclasses: List<MClass> by lazy {
@@ -56,8 +58,8 @@ internal class MKClassImpl(
 //        nestedClassNames.map { "$jName\$$it".asMClass() }
     }
 
-    override fun getTypeParameter(id: Int): MTypeParameter {
-        return parameterId(typeParameters, null, id)
+    override fun getTypeParameter(id: Int): MKTypeParameter {
+        return parameterId(null, id)
     }
 
     override fun toString(): String {
