@@ -9,8 +9,10 @@ internal class MJClassImpl(
     override val asJr: Class<*>,
 ) : AbsMDeclaration(), MClass {
     override val jName: JClassName = asJr.name
-    override val typeParameters: List<MTypeParameter>
-        get() = TODO("Not yet implemented")
+    override val typeParameters: List<MTypeParameter> by lazy {
+        asJr.typeParameters.map { MJTypeParameter(it) }
+    }
+
     override val supertypes: List<MType> by lazy {
         listOf(asJr.genericSuperclass, *asJr.genericInterfaces).map { MJTypeImpl(it) }
     }
@@ -24,8 +26,9 @@ internal class MJClassImpl(
         asJr.declaredClasses.map { it.simpleName }
     }
 
-    override val functions: List<MFunction>
-        get() = TODO("Not yet implemented")
+    override val functions: List<MFunction> by lazy {
+        asJr.declaredMethods.map { MJFunctionImpl(this, it) }
+    }
     override val properties: List<MProperty>
         get() = TODO("Not yet implemented")
 

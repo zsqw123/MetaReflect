@@ -64,7 +64,7 @@ class MKTypeParameterClassifier(
 class MKTypeParameter(
     override val asKm: KmTypeParameter,
     private val parameterContainer: MKTypeParameterContainer,
-) : MTypeParameter, KtElement<KmTypeParameter> {
+) : MTypeParameter, KtElement<KmTypeParameter>, KReflectAdapter<KTypeParameter> {
     override val asKr: KTypeParameter by lazy { MRKTypeParameterImpl(asKm, parameterContainer) }
 }
 

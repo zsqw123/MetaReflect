@@ -103,7 +103,7 @@ interface MClassClassifier : MElement, MClassifier, JavaClassReflectAdapter {
 
 interface MTypeParameterClassifier : MElement, MClassifier
 
-interface MTypeParameter : MElement, KReflectAdapter<KTypeParameter>
+interface MTypeParameter : MElement
 
 interface MValueParameter : MElement {
     val type: MType
