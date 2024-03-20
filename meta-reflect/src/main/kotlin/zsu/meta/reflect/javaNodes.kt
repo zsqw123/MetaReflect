@@ -13,6 +13,7 @@ class MJTypeParameter(
 class MJValueParameter(
     override val asJr: Parameter,
 ) : MValueParameter, JavaElement<Parameter> {
+    override val name: String = asJr.name
     override val type: MType by lazy {
         MJTypeImpl(asJr.parameterizedType)
     }

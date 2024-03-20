@@ -16,8 +16,10 @@ internal class MJClassImpl(
     override val supertypes: List<MType> by lazy {
         listOf(asJr.genericSuperclass, *asJr.genericInterfaces).map { MJTypeImpl(it) }
     }
-    override val constructors: List<MConstructor>
-        get() = TODO("Not yet implemented")
+
+    override val constructors: List<MConstructor> by lazy {
+        asJr.declaredConstructors.map { MJConstructorImpl(it, this) }
+    }
 
     override val nestedClasses: List<MClass> by lazy {
         asJr.declaredClasses.map { metaReflect.mClassFrom(it) as MClass }
@@ -29,8 +31,9 @@ internal class MJClassImpl(
     override val functions: List<MFunction> by lazy {
         asJr.declaredMethods.map { MJFunctionImpl(this, it) }
     }
-    override val properties: List<MProperty>
-        get() = TODO("Not yet implemented")
+    override val properties: List<MProperty> by lazy {
+        asJr.declaredFields.map { MJProperty(this, it) }
+    }
 
     override val enumEntryNames: List<SimpleName> by lazy { enumEntries.map { it.name } }
 

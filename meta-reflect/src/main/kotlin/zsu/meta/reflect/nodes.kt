@@ -5,7 +5,6 @@ import zsu.meta.reflect.impl.type.WildcardTypeImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
-import kotlin.reflect.KTypeParameter
 import java.lang.reflect.Type as JavaType
 
 interface MElement
@@ -106,6 +105,7 @@ interface MTypeParameterClassifier : MElement, MClassifier
 interface MTypeParameter : MElement
 
 interface MValueParameter : MElement {
+    val name: String
     val type: MType
     val varargElementType: MType?
 }

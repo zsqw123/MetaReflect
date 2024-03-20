@@ -72,6 +72,7 @@ class MKValueParameter(
     override val asKm: KmValueParameter,
     private val parameterContainer: MKTypeParameterContainer,
 ) : MValueParameter, KtElement<KmValueParameter> {
+    override val name: String = asKm.name
     override val type: MType by lazy { MKTypeImpl(asKm.type, parameterContainer) }
 
     override val varargElementType: MType? by lazy {
