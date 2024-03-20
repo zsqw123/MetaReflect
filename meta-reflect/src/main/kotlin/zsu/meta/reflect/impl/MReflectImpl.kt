@@ -26,7 +26,7 @@ internal class MReflectImpl(
 
         val metadataContainer: MetadataContainer = if (metadata == null) {
             if (fallbackJavaImpl) MJClassImpl(this, jClass)
-            else throw IllegalArgumentException("class: $className didn't contain kotlin metadata")
+            else throw IllegalArgumentException("class: $className didn't contains kotlin metadata")
         } else {
             val classMetadata = KotlinClassMetadata.readLenient(metadata)
             when (classMetadata) {
