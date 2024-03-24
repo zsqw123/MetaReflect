@@ -22,7 +22,6 @@ fun main() {
 }
 ```
 
-**Note: Support only Kotlin classes, Not support Java classes currently!**
 
 ## Dependencies
 
