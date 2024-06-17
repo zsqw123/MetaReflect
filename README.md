@@ -37,9 +37,10 @@ dependencies {
 
 Recommended kotlin version as follows:
 
-| Recommend | Possible Compatible Version Range | meta-reflect   |
-|-----------|-----------------------------------|----------------|
-| 1.9.22    | <= 2.0.X                          | \>= 0.0.1-beta |
+| Recommend | Possible Compatible Version Range | meta-reflect |
+|-----------|-----------------------------------|--------------|
+| 1.9.22    | < 2.0.X                           | 0.0.3-beta   |
+| 2.0.0     | <= 2.1.X                          | 0.0.4-beta   |
 
 ## Benchmark
 

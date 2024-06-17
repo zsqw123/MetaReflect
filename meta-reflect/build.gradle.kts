@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     id("insidePublish")
+    id("host.bytedance.kotlin-cacheable")
 }
 
 dependencies {
