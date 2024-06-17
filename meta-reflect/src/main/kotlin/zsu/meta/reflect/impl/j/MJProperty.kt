@@ -1,17 +1,16 @@
 package zsu.meta.reflect.impl.j
 
-import kotlin.metadata.ExperimentalContextReceivers
+import zsu.cacheable.Cacheable
 import zsu.meta.reflect.*
 import java.lang.reflect.Field
+import kotlin.metadata.ExperimentalContextReceivers
 
 class MJProperty(
     override val parent: MClassLike?,
     override val asJr: Field,
 ) : MProperty {
     override val name: String = asJr.name
-    override val returnType: MType by lazy {
-        MJTypeImpl(asJr.genericType)
-    }
+    override val returnType: MType @Cacheable get() = MJTypeImpl(asJr.genericType)
 
     // not support in java
     override val typeParameters: List<MTypeParameter> = emptyList()

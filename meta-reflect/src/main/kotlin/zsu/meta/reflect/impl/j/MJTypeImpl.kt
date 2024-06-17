@@ -1,30 +1,33 @@
 package zsu.meta.reflect.impl.j
 
+import zsu.cacheable.Cacheable
 import zsu.meta.reflect.*
 import java.lang.reflect.*
 
 internal class MJTypeImpl(
     override val asJr: Type,
 ) : MType {
-    override val arguments: List<MTypeProjection> by lazy {
-        val args = when (val javaType = asJr) {
-            is GenericArrayType -> arrayOf(javaType.genericComponentType)
-            is ParameterizedType -> javaType.actualTypeArguments
-            else -> return@lazy emptyList()
+    override val arguments: List<MTypeProjection>
+        @Cacheable get() {
+            val args = when (val javaType = asJr) {
+                is GenericArrayType -> arrayOf(javaType.genericComponentType)
+                is ParameterizedType -> javaType.actualTypeArguments
+                else -> return emptyList()
+            }
+            return args.map { it.asMTypeProjection() }
         }
-        args.map { it.asMTypeProjection() }
-    }
 
-    override val classifier: MClassifier by lazy {
-        val classifier: MClassifier? = when (val javaType = asJr) {
-            is Class<*> -> MJClassClassifier(javaType)
-            is GenericArrayType -> MJClassClassifier(Array::class.java)
-            is ParameterizedType -> (javaType.rawType as? Class<*>)?.let(::MJClassClassifier)
-            is TypeVariable<*> -> MJTypeParameterClassifier(javaType)
-            else -> null
+    override val classifier: MClassifier
+        @Cacheable get() {
+            val classifier: MClassifier? = when (val javaType = asJr) {
+                is Class<*> -> MJClassClassifier(javaType)
+                is GenericArrayType -> MJClassClassifier(Array::class.java)
+                is ParameterizedType -> (javaType.rawType as? Class<*>)?.let(::MJClassClassifier)
+                is TypeVariable<*> -> MJTypeParameterClassifier(javaType)
+                else -> null
+            }
+            return classifier ?: error("unknown type when building MClassifier: $asJr, typeName: ${asJr.typeName}")
         }
-        classifier ?: error("unknown type when building MClassifier: $asJr, typeName: ${asJr.typeName}")
-    }
 
     private fun Type.asMTypeProjection(): MTypeProjection {
         if (this !is WildcardType) return MTypeNoVariance(MJTypeImpl(this))

@@ -1,10 +1,11 @@
 package zsu.meta.reflect
 
-import kotlin.metadata.*
+import zsu.cacheable.Cacheable
 import zsu.meta.reflect.impl.type.WildcardTypeImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.WildcardType
+import kotlin.metadata.*
 import java.lang.reflect.Type as JavaType
 
 interface MElement
@@ -119,17 +120,18 @@ enum class MVariance {
 data class MTypeNoVariance(
     val type: MType,
 ) : MTypeProjection {
-    override val asJr: JavaType by lazy { type.asJr }
+    override val asJr: JavaType @Cacheable get() = type.asJr
 }
 
 data class MTypeWithVariance(
     val variance: MVariance, val type: MType,
 ) : MTypeProjection {
-    override val asJr: WildcardType by lazy {
-        val rawType = type.asJr
-        if (variance == MVariance.OUT) WildcardTypeImpl(rawType, null)
-        else WildcardTypeImpl(null, rawType)
-    }
+    override val asJr: WildcardType
+        @Cacheable get() {
+            val rawType = type.asJr
+            return if (variance == MVariance.OUT) WildcardTypeImpl(rawType, null)
+            else WildcardTypeImpl(null, rawType)
+        }
 }
 
 data object MStarType : MTypeProjection {

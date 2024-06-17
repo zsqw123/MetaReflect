@@ -1,5 +1,6 @@
 package zsu.meta.reflect
 
+import zsu.cacheable.Cacheable
 import zsu.meta.reflect.impl.j.MJTypeImpl
 import java.lang.reflect.Parameter
 import java.lang.reflect.TypeVariable
@@ -14,14 +15,14 @@ class MJValueParameter(
     override val asJr: Parameter,
 ) : MValueParameter, JavaElement<Parameter> {
     override val name: String = asJr.name
-    override val type: MType by lazy {
-        MJTypeImpl(asJr.parameterizedType)
-    }
+    override val type: MType
+        @Cacheable get() = MJTypeImpl(asJr.parameterizedType)
 
-    override val varargElementType: MType? by lazy {
-        if (asJr.isVarArgs) return@lazy null
-        (type.arguments.firstOrNull() as? MTypeNoVariance)?.type
-    }
+    override val varargElementType: MType?
+        @Cacheable get() {
+            if (asJr.isVarArgs) return null
+            return (type.arguments.firstOrNull() as? MTypeNoVariance)?.type
+        }
 }
 
 class MJTypeParameterClassifier(

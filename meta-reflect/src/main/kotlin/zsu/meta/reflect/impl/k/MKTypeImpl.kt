@@ -1,5 +1,6 @@
 package zsu.meta.reflect.impl.k
 
+import zsu.cacheable.Cacheable
 import kotlin.metadata.KmClassifier
 import kotlin.metadata.KmType
 import kotlin.metadata.KmTypeProjection
@@ -17,15 +18,15 @@ internal class MKTypeImpl(
         is KmClassifier.TypeParameter -> MKTypeParameterClassifier(classifier)
     }
 
-    override val arguments: List<MTypeProjection> by lazy {
-        asKm.arguments.map {
-            when {
-                it.type == null || it.variance == null -> MStarType
-                it.variance == KmVariance.INVARIANT -> MTypeNoVariance(it.mkType())
-                else -> MTypeWithVariance(it.mVariance(), it.mkType())
+    override val arguments: List<MTypeProjection>
+        @Cacheable get() =
+            asKm.arguments.map {
+                when {
+                    it.type == null || it.variance == null -> MStarType
+                    it.variance == KmVariance.INVARIANT -> MTypeNoVariance(it.mkType())
+                    else -> MTypeWithVariance(it.mVariance(), it.mkType())
+                }
             }
-        }
-    }
 
     private fun KmTypeProjection.mVariance() = when (val origin = variance!!) {
         KmVariance.IN -> MVariance.IN
@@ -35,5 +36,6 @@ internal class MKTypeImpl(
 
     private fun KmTypeProjection.mkType() = MKTypeImpl(type!!, parameterContainer)
 
-    override val asKr: KType by lazy { MRKTypeImpl(asKm, parameterContainer) }
+    override val asKr: KType
+        @Cacheable get() = MRKTypeImpl(asKm, parameterContainer)
 }

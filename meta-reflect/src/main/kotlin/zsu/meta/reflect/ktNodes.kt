@@ -1,10 +1,11 @@
 package zsu.meta.reflect
 
-import kotlin.metadata.*
+import zsu.cacheable.Cacheable
 import zsu.meta.reflect.impl.k.MKFunctionImpl
 import zsu.meta.reflect.impl.k.MKTypeImpl
 import zsu.meta.reflect.impl.k.MKTypeParameterContainer
 import zsu.meta.reflect.impl.type.MRKTypeParameterImpl
+import kotlin.metadata.*
 import kotlin.reflect.KTypeParameter
 
 interface KtElement<T : Any> : MElement {
@@ -52,7 +53,7 @@ class MKClassClassifier(override val asKm: KmClassifier) : MClassClassifier, KtE
         is KmClassifier.TypeAlias -> asKm.name.asJClass
         else -> error("unexpected KmClassifier: $asKm")
     }
-    override val asJr: Class<*> by lazy { Class.forName(jName) }
+    override val asJr: Class<*> @Cacheable get() = Class.forName(jName)
 }
 
 class MKTypeParameterClassifier(
@@ -65,7 +66,7 @@ class MKTypeParameter(
     override val asKm: KmTypeParameter,
     private val parameterContainer: MKTypeParameterContainer,
 ) : MTypeParameter, KtElement<KmTypeParameter>, KReflectAdapter<KTypeParameter> {
-    override val asKr: KTypeParameter by lazy { MRKTypeParameterImpl(asKm, parameterContainer) }
+    override val asKr: KTypeParameter @Cacheable get() = MRKTypeParameterImpl(asKm, parameterContainer)
 }
 
 class MKValueParameter(
@@ -73,9 +74,8 @@ class MKValueParameter(
     private val parameterContainer: MKTypeParameterContainer,
 ) : MValueParameter, KtElement<KmValueParameter> {
     override val name: String = asKm.name
-    override val type: MType by lazy { MKTypeImpl(asKm.type, parameterContainer) }
+    override val type: MType @Cacheable get() = MKTypeImpl(asKm.type, parameterContainer)
 
-    override val varargElementType: MType? by lazy {
-        asKm.varargElementType?.let { MKTypeImpl(it, parameterContainer) }
-    }
+    override val varargElementType: MType?
+        @Cacheable get() = asKm.varargElementType?.let { MKTypeImpl(it, parameterContainer) }
 }
