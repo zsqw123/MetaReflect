@@ -1,6 +1,6 @@
 package zsu.meta.reflect
 
-import kotlinx.metadata.*
+import kotlin.metadata.*
 import zsu.meta.reflect.impl.k.MKFunctionImpl
 import zsu.meta.reflect.impl.k.MKTypeImpl
 import zsu.meta.reflect.impl.k.MKTypeParameterContainer

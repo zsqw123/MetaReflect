@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl
 
-import kotlinx.metadata.KmVariance
+import kotlin.metadata.KmVariance
 import zsu.meta.reflect.MElement
 import zsu.meta.reflect.MKTypeParameter
 import zsu.meta.reflect.impl.k.MKTypeParameterContainer

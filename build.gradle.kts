@@ -1,7 +1,7 @@
 plugins {
     id("inside") apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
-    id("host.bytedance.kotlin-cacheable") version "0.0.5-beta" apply false
+    id("host.bytedance.kotlin-cacheable") version "0.0.6-beta" apply false
 }
 
 subprojects {

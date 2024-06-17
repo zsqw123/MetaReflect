@@ -1,6 +1,6 @@
 package zsu.meta.reflect
 
-import kotlinx.metadata.*
+import kotlin.metadata.*
 import zsu.meta.reflect.impl.type.WildcardTypeImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Method

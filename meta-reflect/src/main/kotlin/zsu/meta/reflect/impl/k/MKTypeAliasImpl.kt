@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.KmTypeAlias
+import kotlin.metadata.KmTypeAlias
 import zsu.meta.reflect.MClassLike
 import zsu.meta.reflect.MKTypeParameter
 import zsu.meta.reflect.MTypeAlias

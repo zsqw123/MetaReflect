@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl
 
-import kotlinx.metadata.jvm.KotlinClassMetadata
+import kotlin.metadata.jvm.KotlinClassMetadata
 import zsu.meta.reflect.*
 import zsu.meta.reflect.impl.j.MJClassImpl
 import zsu.meta.reflect.impl.k.MFileImpl

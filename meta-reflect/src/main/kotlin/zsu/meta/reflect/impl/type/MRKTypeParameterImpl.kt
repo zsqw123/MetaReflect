@@ -1,7 +1,7 @@
 package zsu.meta.reflect.impl.type
 
-import kotlinx.metadata.KmTypeParameter
-import kotlinx.metadata.isReified
+import kotlin.metadata.KmTypeParameter
+import kotlin.metadata.isReified
 import zsu.meta.reflect.impl.asKVariance
 import zsu.meta.reflect.impl.k.MKTypeParameterContainer
 import kotlin.reflect.KType

@@ -1,8 +1,8 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.ExperimentalContextReceivers
-import kotlinx.metadata.KmFunction
-import kotlinx.metadata.jvm.signature
+import kotlin.metadata.ExperimentalContextReceivers
+import kotlin.metadata.KmFunction
+import kotlin.metadata.jvm.signature
 import zsu.meta.reflect.*
 import zsu.meta.reflect.impl.parameterId
 import java.lang.reflect.Method

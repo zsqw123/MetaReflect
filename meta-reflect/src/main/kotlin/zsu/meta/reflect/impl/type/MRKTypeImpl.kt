@@ -1,8 +1,8 @@
 package zsu.meta.reflect.impl.type
 
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmType
-import kotlinx.metadata.isNullable
+import kotlin.metadata.KmClassifier
+import kotlin.metadata.KmType
+import kotlin.metadata.isNullable
 import zsu.meta.reflect.JClassName
 import zsu.meta.reflect.asJClass
 import zsu.meta.reflect.impl.asKVariance

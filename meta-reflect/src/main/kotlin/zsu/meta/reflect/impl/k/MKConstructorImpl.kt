@@ -1,7 +1,7 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.KmConstructor
-import kotlinx.metadata.jvm.signature
+import kotlin.metadata.KmConstructor
+import kotlin.metadata.jvm.signature
 import zsu.meta.reflect.MKConstructor
 import zsu.meta.reflect.MKValueParameter
 import zsu.meta.reflect.MValueParameter

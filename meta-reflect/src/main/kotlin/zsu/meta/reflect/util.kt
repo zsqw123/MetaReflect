@@ -1,7 +1,7 @@
 package zsu.meta.reflect
 
-import kotlinx.metadata.ClassName
-import kotlinx.metadata.jvm.toJvmInternalName
+import kotlin.metadata.ClassName
+import kotlin.metadata.jvm.toJvmInternalName
 
 // eg. foo.bar.Sample$Inner
 typealias JClassName = String

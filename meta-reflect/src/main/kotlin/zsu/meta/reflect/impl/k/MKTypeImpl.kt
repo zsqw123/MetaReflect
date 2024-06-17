@@ -1,9 +1,9 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.KmType
-import kotlinx.metadata.KmTypeProjection
-import kotlinx.metadata.KmVariance
+import kotlin.metadata.KmClassifier
+import kotlin.metadata.KmType
+import kotlin.metadata.KmTypeProjection
+import kotlin.metadata.KmVariance
 import zsu.meta.reflect.*
 import zsu.meta.reflect.impl.type.MRKTypeImpl
 import kotlin.reflect.KType

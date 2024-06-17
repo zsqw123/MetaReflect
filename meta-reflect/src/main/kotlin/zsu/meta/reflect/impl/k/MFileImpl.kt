@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.KmPackage
+import kotlin.metadata.KmPackage
 import zsu.cacheable.Cacheable
 import zsu.meta.reflect.MFile
 import kotlin.jvm.internal.Reflection

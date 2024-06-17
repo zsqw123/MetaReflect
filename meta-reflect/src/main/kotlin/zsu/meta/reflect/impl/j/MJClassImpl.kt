@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl.j
 
-import kotlinx.metadata.ExperimentalContextReceivers
+import kotlin.metadata.ExperimentalContextReceivers
 import zsu.meta.reflect.*
 import zsu.meta.reflect.impl.AbsMDeclaration
 

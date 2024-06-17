@@ -1,6 +1,6 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.KmDeclarationContainer
+import kotlin.metadata.KmDeclarationContainer
 import zsu.meta.reflect.KtElement
 import zsu.meta.reflect.MFunction
 import zsu.meta.reflect.MProperty

@@ -1,7 +1,7 @@
 package zsu.meta.reflect.impl.k
 
-import kotlinx.metadata.ExperimentalContextReceivers
-import kotlinx.metadata.KmClass
+import kotlin.metadata.ExperimentalContextReceivers
+import kotlin.metadata.KmClass
 import zsu.cacheable.Cacheable
 import zsu.meta.reflect.*
 import zsu.meta.reflect.impl.parameterId
